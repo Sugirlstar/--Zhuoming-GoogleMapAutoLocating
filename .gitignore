@@ -1,0 +1,7 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.vscode
+test-*kmz
+dev-*ipynb
