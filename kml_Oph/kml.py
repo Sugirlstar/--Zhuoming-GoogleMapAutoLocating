@@ -4,6 +4,7 @@ import pytz
 import simplekml
 import pandas as pd
 import sys
+<<<<<<< HEAD
 import math
 import numpy as np
 
@@ -47,3 +48,24 @@ kml.savekmz(file[:-5] + '--' + time +'.kmz')
 #    return self._open_to_write(zinfo, force_zip64=force_zip64)
 #UserWarning: Duplicate name: 'files/icon-A1.png'
 
+=======
+from pathlib import Path
+
+file = sys.argv[1]
+time = datetime.datetime.now(tz=pytz.timezone('Asia/Shanghai'))
+time_str = time.replace(tzinfo=None).isoformat(timespec='hours')
+data = pd.read_excel(file, index_col=0)
+file_stem = Path(file).stem
+kml = simplekml.Kml()
+
+for i, coord_str in enumerate(data.Coordinate):
+    pnt = kml.newpoint()
+    pnt.name = i
+    coord_str = coord_str.strip('()').split(',')
+    coords = tuple([float(x) for x in coord_str])
+    pnt.coords = [coords]
+    pnt.description = data['Description'][i]
+    pnt.style.iconstyle.icon.href = 'images/icon-{}{}.png'.format(data['Type'][i], data['Priority'][i])
+output_name = '{}-{}.kmz'.format(file_stem, time_str)
+kml.savekmz(output_name)
+>>>>>>> c15fecca16df1e4d1eaca363b1015fb0b461d78e
