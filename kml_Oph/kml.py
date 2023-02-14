@@ -14,14 +14,15 @@ time_str = time.replace(tzinfo=None).isoformat(timespec='hours')
 pd.set_option("display.max_colwidth",1000)
 data = pd.read_excel(file)
 data = data.dropna()
-descpt = data.iloc[:,1]
-coordi = data.iloc[:,0]
+descpt = list(data.iloc[:,4])
+coordi = list(data.iloc[:,0])
 
 file_stem = Path(file).stem
 kml = simplekml.Kml()
 
-for i in data.index:
-    
+n=0
+for i in range(len(descpt)-1):
+
     descriptext = descpt[i].strip('【').split('\n')
     namei = [j for j in descriptext if '信息编号' in j]
     if str(namei).find('T') == -1:
@@ -30,9 +31,11 @@ for i in data.index:
     prior = [j for j in descriptext if '优先等级' in j]
     if str(prior).count('级')==1:
         continue
+    n=n+1
+
     priorint = str(prior)[str(prior).find('】')+1]
     Typeo = 'B' if priorint == '3' else 'A'
-    coords = tuple([float(i) for i in data['Coordinate'][i].split(',')])
+    coords = tuple([float(i) for i in coordi[i].split(',')])
     
     pnt = kml.newpoint()
     pnt.name = nameint
@@ -40,8 +43,12 @@ for i in data.index:
     pnt.description = description=descpt[i]
     pnt.style.iconstyle.icon.href = 'images/icon-' + Typeo + priorint +'.png'
 
-output_name = '{}-{}.kmz'.format(file_stem, time_str)
-kml.savekmz(output_name)
+
+if n==0:
+    print('no new points added')
+else:
+    output_name = '{}-{}.kmz'.format(file_stem, time_str)
+    kml.savekmz(output_name)
 
 
 #if there are duplicated coordinates:
